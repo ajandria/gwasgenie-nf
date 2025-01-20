@@ -4,3 +4,6 @@ channels:
 - bioconda
 dependencies:
 - conda-forge::r-base=4.4.2
+- conda-forge::r-dplyr=1.1.4
+- conda-forge::r-readxl=1.4.3
+- conda-forge::r-readr=2.1.5
