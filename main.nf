@@ -44,13 +44,13 @@ workflow GWASGENIE {
 
     pheno_covs = EXTRACT_PHENOS.out.pheno
         .flatMap { files -> // Unpack the list
-            files.collect { file -> // TODO: collect breaks the mapping when only one GWAS is requested
+            files.collect { file ->
                 def prefix = file.name.replace('_pheno.txt', '')
                 [prefix, file]
             }
         }
         .join(
-            EXTRACT_PHENOS.out.covs.flatMap { files -> // Unpack the list
+            EXTRACT_PHENOS.out.covs.flatMap { files ->
                 files.collect { file -> 
                     def prefix = file.name.replace('_covs.txt', '')
                     [prefix, file]
@@ -58,35 +58,29 @@ workflow GWASGENIE {
             }
         )
         .map { prefix, phenoFile, covFile ->
-            [prefix, phenoFile, covFile]
+            // Resolve qced_genotypes to standalone files
+            def genotypesBase = params.qced_genotypes
+            def header = genotypesBase.tokenize('/').last() // Extract only the file name
+            def bedFile = file("${genotypesBase}.bed")
+            def bimFile = file("${genotypesBase}.bim")
+            def famFile = file("${genotypesBase}.fam")
+            return [prefix, phenoFile, covFile, header, bedFile, bimFile, famFile]
         }
         .groupTuple()
 
-    pheno_covs.view { prefix, pheno, covariates ->
-        log.info """
-        \u001B[1m\u001B[34mMerged Result: ${prefix}\u001B[0m
-        \u001B[32m------------------------------------------------------------\u001B[0m
-        \u001B[33mPhenotype:  \u001B[0m ${pheno}
-        \u001B[33mCovariates: \u001B[0m ${covariates}
-        \u001B[32m------------------------------------------------------------\u001B[0m
-        """
-    }
-
-    // Resolve symbolic links and include all extensions for PLINK input
-    resolved_genotypes = Channel
-        .fromPath(qced_genotypes) // Ensure it's a channel and the path exists
-        .map { file -> 
-            def base = file.name.replaceFirst(/(\.bed|\.bim|\.fam)$/, '') // Strip known extensions
-            def extensions = ['.bed', '.bim', '.fam']                    // PLINK required extensions
-            def files = extensions.collect { ext -> file.resolveSibling("${base}${ext}") } // Resolve files
-            return [base, files] // Include header (base) as the first element
+        pheno_covs.view { prefix, pheno, covariates, header, bed, bim, fam ->
+            log.info """
+            \u001B[1m\u001B[34mMerged Result: ${prefix}\u001B[0m
+            \u001B[32m------------------------------------------------------------\u001B[0m
+            \u001B[33mPhenotype:  \u001B[0m ${pheno}
+            \u001B[33mCovariates: \u001B[0m ${covariates}
+            \u001B[32m------------------------------------------------------------\u001B[0m
+            """
         }
-    resolved_genotypes.view()
 
-    REGENIE_STEP_1 (
-        pheno_covs,
-        resolved_genotypes
-    )
+        REGENIE_STEP_1 (
+            pheno_covs
+        )
 
 }
 

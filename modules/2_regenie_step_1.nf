@@ -5,19 +5,18 @@ process REGENIE_STEP_1 {
     conda "${moduleDir}/envs/regenie.yaml"
 
     input:
-    tuple val(phenotype), path(phenos), path(covs)
-    tuple val(header), path(plink_qced)
+    tuple val(phenotype), path(phenos), path(covs), val(header), path(bed), path(bim), path(fam)
 
     output:
     path("*"), emit: s1
 
     script:
     """
-    plink --bfile ${header} --mac 100 --write-snplist --out snps_pass
+    plink --bfile ${header[0]} --mac 100 --write-snplist --out snps_pass
 
     regenie \
     --step 1 --force-step1 \
-    --bed ${header} \
+    --bed ${header[0]} \
     --phenoFile ${phenos} \
     --covarFile ${covs} \
     --extract snps_pass.snplist \
