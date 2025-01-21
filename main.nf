@@ -76,9 +76,6 @@ workflow GWASGENIE {
             def sample_file = file("${params.bgen_sample_file}")
             return [chrom, bgen_file, sample_file]
         }
-        .filter { chrom, bgen_file, sample_file ->
-            bgen_file.exists() && sample_file.exists()
-        }
         .flatMap { chrom, bgen_file, sample_file ->
             // Ensure the channel emits one tuple per chromosome
             [[chrom, bgen_file, sample_file]]
