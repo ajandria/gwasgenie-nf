@@ -45,7 +45,7 @@ apply(gwas_sheet, 1, function(row) {
     select(FID, IID, all_of(covariates)) # Use `SAMPLE` as ID and the specified covariates
 
   # Rename columns to retain their original names
-  colnames(covariate_data)[-1] <- covariates
+  colnames(covariate_data)[-c(1,2)] <- covariates
 
   # Write covariate file
   write_tsv(covariate_data, covariate_file)
