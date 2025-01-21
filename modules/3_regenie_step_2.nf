@@ -5,27 +5,26 @@ process REGENIE_STEP_2 {
     conda "${moduleDir}/envs/regenie.yaml"
 
     input:
-    tuple val(phenotype), path(phenos), path(covs), val(header), path(bed), path(bim), path(fam),
-          val(chrom), path(bgen_file), path(sample_file), path(pred_file)
+    tuple val(phenotype), path(phenos), path(covs), val(header), path(bed), path(bim), path(fam), path(pred_s1), val(chrom), pat(bgen), path(sample_bgen)
 
     output:
-    path("${chrom}_${phenotype}_regenie_step_2.*"), emit: s2
+    path("${phenotype}/${chrom}_${phenotype}_regenie_step_2*"), emit: s2
 
     script:
     """
     regenie \
         --step 2 \
-        --bgen ${bgen_file} \
-        --sample ${sample_file} \
+        --bgen ${bgen} \
+        --sample ${sample_bgen} \
         --ref-first \
         --af-cc \
         --phenoFile ${phenos} \
         --covarFile ${covs} \
-        --pred ${pred_file} \
+        --pred ${pred_s1} \
         --bsize 400 --qt --firth --approx --firth-se --pThresh 0.999 --minMAC 5 \
         --test additive \
         --verbose \
         --threads $task.cpus \
-        --out ${phenotype}/${chrom}_${phenotype}
+        --out ${phenotype}/${chrom}_${phenotype}_regenie_step_2
     """
 }
