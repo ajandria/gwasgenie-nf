@@ -14,7 +14,7 @@ process REGENIE_STEP_1 {
     """
     regenie \
         --step 2 \
-        --bgen ${bgen_file} \
+        --bgen ${header[0]} \
         --sample ${sample_file} \
         --ref-first \
         --af-cc \
