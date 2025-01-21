@@ -6,18 +6,18 @@ process REGENIE_STEP_1 {
 
     input:
     tuple val(phenotype), path(phenos), path(covs)
-    path(qced_genotypes)
+    tuple val(header), path(plink_qced)
 
     output:
     path("*"), emit: s1
 
     script:
     """
-    plink --bfile ${qced_genotypes} --mac 100 --write-snplist --out snps_pass
+    plink --bfile ${header} --mac 100 --write-snplist --out snps_pass
 
     regenie \
     --step 1 --force-step1 \
-    --bed ${qced_genotypes} \
+    --bed ${header} \
     --phenoFile ${phenos} \
     --covarFile ${covs} \
     --extract snps_pass.snplist \
