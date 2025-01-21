@@ -44,9 +44,8 @@ workflow GWASGENIE {
 
     pheno_covs = EXTRACT_PHENOS.out.pheno
         .flatMap { files -> // Unpack the list
-            files.collect { file -> 
+            files.collect { file -> // TODO: collect breaks the mapping when only one GWAS is requested
                 def prefix = file.name.replace('_pheno.txt', '')
-                println("Prefix: ${prefix}, File: ${file}") 
                 [prefix, file]
             }
         }
