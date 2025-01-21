@@ -21,8 +21,6 @@ process REGENIE_STEP_1 {
     --phenoFile ${phenos} \
     --covarFile ${covs} \
     --extract snps_pass.snplist \
-    --covarColList Gender,Age,BMI,PC1,PC2,PC3,PC4,PC5,PC6,PC7,PC8,PC9,PC10 \
-    --phenoColList Total_30_normed \
     --bsize 1000 \
     --qt --lowmem \
     --lowmem-prefix tmp_${phenotype}_regenie-step_1 \
