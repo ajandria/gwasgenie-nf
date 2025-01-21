@@ -75,8 +75,10 @@ workflow GWASGENIE {
             def sample_file = file("${params.bgen_sample_file}")
             [chrom_with_x, bgen_file, sample_file]
         }
-    chromosome_bgen_files.view()
+    //chromosome_bgen_files.view()
 
+    pheno_covs.view()
+    REGENIE_STEP_1.out.s1.view()
     pheno_chrom_bgen = pheno_covs
         .join(REGENIE_STEP_1.out.s1)
     pheno_chrom_bgen.view()
