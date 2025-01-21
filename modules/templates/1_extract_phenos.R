@@ -32,6 +32,7 @@ apply(gwas_sheet, 1, function(row) {
   pheno_cov_data <- phenos %>%
     select(FID, IID, all_of(pheno), all_of(covariates)) %>% # Use `SAMPLE` as ID and the specified phenotype column
     na.omit()
+  colnames(pheno_cov_data)[-c(1,2,3)] <- covariates
 
   pheno_data <- pheno_cov_data %>%
     select(FID, IID, all_of(pheno))
