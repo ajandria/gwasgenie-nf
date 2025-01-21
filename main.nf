@@ -79,32 +79,33 @@ workflow GWASGENIE {
         .filter { chrom, bgen_file, sample_file ->
             bgen_file.exists() && sample_file.exists()
         }
+    chromosome_bgen_files.view()
 
-    // Step 3: Combine phenotypes with chromosomes and BGEN files
-    pheno_chrom_bgen = pheno_covs
-        .mix(chromosome_bgen_files)
-        .map { pheno_data, chrom_data ->
-            def (prefix, phenoFile, covFile, header, bedFile, bimFile, famFile) = pheno_data
-            def (chrom, bgen_file, sample_file) = chrom_data
-            [prefix, phenoFile, covFile, header, bedFile, bimFile, famFile, chrom, bgen_file, sample_file]
-        }
+    // // Step 3: Combine phenotypes with chromosomes and BGEN files
+    // pheno_chrom_bgen = pheno_covs
+    //     .mix(chromosome_bgen_files)
+    //     .map { pheno_data, chrom_data ->
+    //         def (prefix, phenoFile, covFile, header, bedFile, bimFile, famFile) = pheno_data
+    //         def (chrom, bgen_file, sample_file) = chrom_data
+    //         [prefix, phenoFile, covFile, header, bedFile, bimFile, famFile, chrom, bgen_file, sample_file]
+    //     }
 
-    // Step 4: Join with REGENIE_STEP_1 output
-    pheno_chrom_pred = pheno_chrom_bgen
-        .join(REGENIE_STEP_1.out.s1) { pheno_bgen, step1_output ->
-            def (phenotype, phenoFile, covFile, header, bedFile, bimFile, famFile, chrom, bgen_file, sample_file) = pheno_bgen
-            def (phenotype_step1, pred_file) = step1_output
-            if (phenotype == phenotype_step1) {
-                return [phenotype, phenoFile, covFile, header, bedFile, bimFile, famFile, chrom, bgen_file, sample_file, pred_file]
-            }
-            return null
-        }
-        .filter { it != null }
+    // // Step 4: Join with REGENIE_STEP_1 output
+    // pheno_chrom_pred = pheno_chrom_bgen
+    //     .join(REGENIE_STEP_1.out.s1) { pheno_bgen, step1_output ->
+    //         def (phenotype, phenoFile, covFile, header, bedFile, bimFile, famFile, chrom, bgen_file, sample_file) = pheno_bgen
+    //         def (phenotype_step1, pred_file) = step1_output
+    //         if (phenotype == phenotype_step1) {
+    //             return [phenotype, phenoFile, covFile, header, bedFile, bimFile, famFile, chrom, bgen_file, sample_file, pred_file]
+    //         }
+    //         return null
+    //     }
+    //     .filter { it != null }
 
-    // Step 5: Run REGENIE Step 2
-    REGENIE_STEP_2 (
-        pheno_chrom_pred
-    )
+    // // Step 5: Run REGENIE Step 2
+    // REGENIE_STEP_2 (
+    //     pheno_chrom_pred
+    // )
 }
 
 /*
