@@ -12,7 +12,7 @@ process REGENIE_STEP_1 {
 
     script:
     """
-    plink --bfile ${header[0]} --mac 100 --write-snplist --out snps_pass
+    plink --bfile ${header} --mac 100 --write-snplist --out snps_pass
 
     regenie \
     --step 1 --force-step1 \
