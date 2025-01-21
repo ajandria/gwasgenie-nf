@@ -122,8 +122,7 @@ workflow {
     //
     GWASGENIE (
         params.gwas_sheet,
-        params.phenos,
-        params.qced_genotypes
+        params.phenos
     )
 }
 
