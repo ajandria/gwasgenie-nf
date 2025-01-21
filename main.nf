@@ -72,10 +72,20 @@ workflow GWASGENIE {
         """
     }
 
-    pheno_covs.view()
+    // Resolve symbolic links and include all extensions for PLINK input
+    resolved_genotypes = qced_genotypes.map { file ->
+        def base = file.name.replaceFirst(/(\.bed|\.bim|\.fam)$/, '') // Strip known extensions
+        def extensions = ['.bed', '.bim', '.fam']                    // PLINK required extensions
+        extensions.collect { ext -> file.resolveSibling("${base}${ext}") }
+    }.flatten() // Flatten the list of files
+
+    resolved_genotypes.view { genotypes ->
+        log.info "Resolved Genotypes: ${genotypes}"
+    }
+
     REGENIE_STEP_1 (
         pheno_covs,
-        qced_genotypes
+        resolved_genotypes
     )
 
 }
