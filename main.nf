@@ -74,11 +74,7 @@ workflow GWASGENIE {
         .map { chrom ->
             def bgen_file = file("${params.imputed_bgen_chrs_path}/chr${chrom}_imputed_s2m.bgen")
             def sample_file = file("${params.bgen_sample_file}")
-            return [chrom, bgen_file, sample_file]
-        }
-        .flatMap { chrom, bgen_file, sample_file ->
-            // Ensure the channel emits one tuple per chromosome
-            [[chrom, bgen_file, sample_file]]
+            [chrom, bgen_file, sample_file] // Emit as a tuple
         }
     chromosome_bgen_files.view()
 
@@ -88,7 +84,7 @@ workflow GWASGENIE {
         .map { pheno_data, chrom_data ->
             def (prefix, phenoFile, covFile, header, bedFile, bimFile, famFile) = pheno_data
             def (chrom, bgen_file, sample_file) = chrom_data
-            return [prefix, phenoFile, covFile, header, bedFile, bimFile, famFile, chrom, bgen_file, sample_file]
+            [prefix, phenoFile, covFile, header, bedFile, bimFile, famFile, chrom, bgen_file, sample_file]
         }
     pheno_chrom_bgen.view()
 
