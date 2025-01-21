@@ -30,7 +30,7 @@ apply(gwas_sheet, 1, function(row) {
 
   # Filter for phenotype
   pheno_data <- phenos %>%
-    select(SAMPLE, all_of(pheno)) # Use `SAMPLE` as ID and the specified phenotype column
+    select(FID, IID, all_of(pheno))
 
   # Generate filenames based on phenotype and covariates
   covariates_name <- paste(covariates, collapse = "_")
