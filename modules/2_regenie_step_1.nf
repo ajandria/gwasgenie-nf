@@ -8,7 +8,7 @@ process REGENIE_STEP_1 {
     tuple val(phenotype), path(phenos), path(covs), val(header), path(bed), path(bim), path(fam)
 
     output:
-    path("*"), emit: s1
+    path("${phenotype}_regenie-step_1_pred.list"), emit: s1
 
     script:
     """
