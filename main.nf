@@ -45,14 +45,14 @@ workflow GWASGENIE {
     pheno_covs = EXTRACT_PHENOS.out.pheno
         .flatMap { files -> // Unpack the list
             files.collect { file -> 
-                def prefix = file.toString().tokenize('/').last().replace('_pheno.txt', '')
+                def prefix = file.name.replace('_pheno.txt', '')
                 [prefix, file]
             }
         }
         .join(
             EXTRACT_PHENOS.out.covs.flatMap { files -> // Unpack the list
                 files.collect { file -> 
-                    def prefix = file.toString().tokenize('/').last().replace('_covs.txt', '')
+                    def prefix = file.name.replace('_covs.txt', '')
                     [prefix, file]
                 }
             }
