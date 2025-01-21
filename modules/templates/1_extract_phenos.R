@@ -29,8 +29,12 @@ apply(gwas_sheet, 1, function(row) {
   }
 
   # Filter for phenotype
-  pheno_data <- phenos %>%
-    select(FID, IID, all_of(pheno)) # Use `SAMPLE` as ID and the specified phenotype column
+  pheno_cov_data <- phenos %>%
+    select(FID, IID, all_of(pheno), all_of(covariates)) %>% # Use `SAMPLE` as ID and the specified phenotype column
+    na.omit()
+
+  pheno_data <- pheno_cov_data %>%
+    select(FID, IID, all_of(pheno))
 
   # Generate filenames based on phenotype and covariates
   covariates_name <- paste(covariates, collapse = "_")
@@ -41,7 +45,7 @@ apply(gwas_sheet, 1, function(row) {
   write_tsv(pheno_data, pheno_file)
 
   # Filter for covariates
-  covariate_data <- phenos %>%
+  covariate_data <- pheno_cov_data %>%
     select(FID, IID, all_of(covariates)) # Use `SAMPLE` as ID and the specified covariates
 
   # Rename columns to retain their original names
