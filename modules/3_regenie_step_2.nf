@@ -1,14 +1,15 @@
-process REGENIE_STEP_1 {
+process REGENIE_STEP_2 {
 
-    tag "${phenotype}"
+    tag "${phenotype}_${chrom}"
 
     conda "${moduleDir}/envs/regenie.yaml"
 
     input:
-    tuple val(phenotype), path(phenos), path(covs), val(header), path(bed), path(bim), path(fam)
+    tuple val(phenotype), path(phenos), path(covs), val(header), path(bed), path(bim), path(fam),
+          val(chrom), path(bgen_file), path(sample_file), path(pred_file)
 
     output:
-    tuple val(phenotype), path("${phenotype}_regenie-step_1_pred.list"), emit: s1
+    path("${chrom}_${phenotype}_regenie_step_2.*"), emit: s2
 
     script:
     """
