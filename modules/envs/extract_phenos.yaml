@@ -1,4 +1,4 @@
-name: gwasgenie
+name: extract_phenos
 channels:
 - conda-forge
 - bioconda

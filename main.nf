@@ -30,6 +30,7 @@ workflow GWASGENIE {
     take:
     gwas_sheet // channel: samplesheet read in from --gwas_sheet
     phenos
+    qced_genotypes
 
     main:
 
@@ -59,6 +60,7 @@ workflow GWASGENIE {
         .map { prefix, phenoFile, covFile ->
             [prefix, phenoFile, covFile]
         }
+        .groupTuple()
 
     pheno_covs.view { prefix, pheno, covariates ->
         log.info """
@@ -70,8 +72,10 @@ workflow GWASGENIE {
         """
     }
 
+    pheno_covs.view()
     REGENIE_STEP_1 (
-        pheno_covs
+        pheno_covs,
+        qced_genotypes
     )
 
 }
@@ -91,7 +95,8 @@ workflow {
     //
     GWASGENIE (
         params.gwas_sheet,
-        params.phenos
+        params.phenos,
+        params.qced_genotypes
     )
 }
 

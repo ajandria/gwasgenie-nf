@@ -1,0 +1,7 @@
+name: regenie_plink
+channels:
+- conda-forge
+- bioconda
+dependencies:
+- bioconda::regenie=3.6
+- bioconda::plink
