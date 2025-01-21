@@ -76,9 +76,6 @@ workflow GWASGENIE {
             def sample_file = file("${params.bgen_sample_file}")
             [chrom, bgen_file, sample_file]
         }
-        .filter { chrom, bgen_file, sample_file ->
-            bgen_file.exists() && sample_file.exists()
-        }
     chromosome_bgen_files.view()
 
     // // Step 3: Combine phenotypes with chromosomes and BGEN files
