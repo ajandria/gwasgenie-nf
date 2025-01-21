@@ -42,7 +42,7 @@ apply(gwas_sheet, 1, function(row) {
 
   # Filter for covariates
   covariate_data <- phenos %>%
-    select(SAMPLE, all_of(covariates)) # Use `SAMPLE` as ID and the specified covariates
+    select(FID, IID, all_of(covariates)) # Use `SAMPLE` as ID and the specified covariates
 
   # Rename columns to retain their original names
   colnames(covariate_data)[-1] <- covariates
