@@ -75,12 +75,34 @@ workflow GWASGENIE {
             def sample_file = file("${params.bgen_sample_file}")
             [chrom_with_x, bgen_file, sample_file]
         }
-    //chromosome_bgen_files.view()
 
-    pheno_covs.view()
-    REGENIE_STEP_1.out.s1.view()
+    // Expand phenotypes with chromosomes and BGEN files
     pheno_chrom_bgen = pheno_covs
-        .join(REGENIE_STEP_1.out.s1)
+        .join(REGENIE_STEP_1.out.s1) // Join phenotypes with REGENIE_STEP_1 output
+        .flatMap { pheno_data, pred_file_data ->
+            // Unpack phenotype and step 1 data
+            def (prefix, phenoFile, covFile, header, bedFile, bimFile, famFile) = pheno_data
+            def (phenotype, pred_file) = pred_file_data
+
+            // Combine with each chromosome's BGEN file
+            chromosome_bgen_files.map { chrom_with_x, bgen_file, sample_file ->
+                [
+                    phenotype,
+                    phenoFile,
+                    covFile,
+                    header,
+                    bedFile,
+                    bimFile,
+                    famFile,
+                    chrom_with_x,
+                    bgen_file,
+                    sample_file,
+                    pred_file
+                ]
+            }
+        }
+
+    // View the resulting combinations for debugging
     pheno_chrom_bgen.view()
 
     // // Step 5: Run REGENIE Step 2
