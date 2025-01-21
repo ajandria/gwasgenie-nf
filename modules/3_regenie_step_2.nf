@@ -12,6 +12,7 @@ process REGENIE_STEP_2 {
 
     script:
     """
+    mkdir ${phenotype}
     regenie \
         --step 2 \
         --bgen ${bgen} \
