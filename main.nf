@@ -78,9 +78,9 @@ workflow GWASGENIE {
     chromosome_bgen_files.view()
 
     pheno_chrom_bgen = pheno_covs
-        .join(REGENIE_STEP_1)
+        .join(REGENIE_STEP_1.out.s1)
     pheno_chrom_bgen.view()
-    
+
     // // Step 5: Run REGENIE Step 2
     // REGENIE_STEP_2 (
     //     pheno_chrom_pred
