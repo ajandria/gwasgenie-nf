@@ -9,7 +9,7 @@ process EXTRACT_PHENOS {
 
     output:
     path("*_pheno.txt")     , emit: pheno
-    path("*_covariates.txt"), emit: covs
+    path("*_covs.txt"), emit: covs
 
     script:
     template "1_extract_phenos.R"
