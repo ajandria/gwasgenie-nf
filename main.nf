@@ -78,14 +78,15 @@ workflow GWASGENIE {
         }
     chromosome_bgen_files.view()
 
-    // // Step 3: Combine phenotypes with chromosomes and BGEN files
-    // pheno_chrom_bgen = pheno_covs
-    //     .mix(chromosome_bgen_files)
-    //     .map { pheno_data, chrom_data ->
-    //         def (prefix, phenoFile, covFile, header, bedFile, bimFile, famFile) = pheno_data
-    //         def (chrom, bgen_file, sample_file) = chrom_data
-    //         [prefix, phenoFile, covFile, header, bedFile, bimFile, famFile, chrom, bgen_file, sample_file]
-    //     }
+    // Step 3: Combine phenotypes with chromosomes and BGEN files
+    pheno_chrom_bgen = pheno_covs
+        .mix(chromosome_bgen_files)
+        .map { pheno_data, chrom_data ->
+            def (prefix, phenoFile, covFile, header, bedFile, bimFile, famFile) = pheno_data
+            def (chrom, bgen_file, sample_file) = chrom_data
+            [prefix, phenoFile, covFile, header, bedFile, bimFile, famFile, chrom, bgen_file, sample_file]
+        }
+    pheno_chrom_bgen.view()
 
     // // Step 4: Join with REGENIE_STEP_1 output
     // pheno_chrom_pred = pheno_chrom_bgen
