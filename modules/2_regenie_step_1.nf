@@ -1,30 +1,31 @@
-process REGENIE_STEP_1 {
+process REGENIE_STEP_2 {
 
-    tag "${phenotype}"
+    tag "${phenotype}_${chrom}"
 
     conda "${moduleDir}/envs/regenie.yaml"
 
     input:
-    tuple val(phenotype), path(phenos), path(covs), val(header), path(bed), path(bim), path(fam)
+    tuple val(phenotype), path(phenos), path(covs), val(header), path(bed), path(bim), path(fam),
+          val(chrom), path(bgen_file), path(sample_file), path(pred_file)
 
     output:
-    path("*"), emit: s1
+    path("${chrom}_${phenotype}_regenie_step_2.*"), emit: s2
 
     script:
     """
-    plink --bfile ${header[0]} --mac 100 --write-snplist --out snps_pass
-
     regenie \
-    --step 1 --force-step1 \
-    --bed ${header[0]} \
-    --phenoFile ${phenos} \
-    --covarFile ${covs} \
-    --extract snps_pass.snplist \
-    --bsize 1000 \
-    --qt --lowmem \
-    --lowmem-prefix tmp_${phenotype}_regenie-step_1 \
-    --out ${phenotype}_regenie-step_1 \
-    --threads $task.cpus \
-    --verbose
+        --step 2 \
+        --bgen ${bgen_file} \
+        --sample ${sample_file} \
+        --ref-first \
+        --af-cc \
+        --phenoFile ${phenos} \
+        --covarFile ${covs} \
+        --pred ${pred_file} \
+        --bsize 400 --qt --firth --approx --firth-se --pThresh 0.999 --minMAC 5 \
+        --test additive \
+        --verbose \
+        --threads $task.cpus \
+        --out ${phenotype}/${chrom}_${phenotype}
     """
 }

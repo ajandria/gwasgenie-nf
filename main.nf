@@ -15,6 +15,7 @@
 
 include { EXTRACT_PHENOS } from './modules/1_extract_phenos'
 include { REGENIE_STEP_1 } from './modules/2_regenie_step_1'
+include { REGENIE_STEP_2 } from './modules/3_regenie_step_2'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -28,29 +29,26 @@ include { REGENIE_STEP_1 } from './modules/2_regenie_step_1'
 workflow GWASGENIE {
 
     take:
-    gwas_sheet // channel: samplesheet read in from --gwas_sheet
+    gwas_sheet
     phenos
-    qced_genotypes
 
     main:
 
-    //
-    // WORKFLOW: Run pipeline
-    //
+    // Step 1: Extract phenotypes and covariates
     EXTRACT_PHENOS (
         gwas_sheet,
         phenos
     )
 
     pheno_covs = EXTRACT_PHENOS.out.pheno
-        .flatMap { files -> // Unpack the list
+        .flatMap { files -> // Unpack phenotypes
             files.collect { file ->
                 def prefix = file.name.replace('_pheno.txt', '')
                 [prefix, file]
             }
         }
         .join(
-            EXTRACT_PHENOS.out.covs.flatMap { files ->
+            EXTRACT_PHENOS.out.covs.flatMap { files -> // Unpack covariates
                 files.collect { file -> 
                     def prefix = file.name.replace('_covs.txt', '')
                     [prefix, file]
@@ -58,30 +56,55 @@ workflow GWASGENIE {
             }
         )
         .map { prefix, phenoFile, covFile ->
-            // Resolve qced_genotypes to standalone files
             def genotypesBase = params.qced_genotypes
-            def header = genotypesBase.tokenize('/').last() // Extract only the file name
+            def header = genotypesBase.tokenize('/').last()
             def bedFile = file("${genotypesBase}.bed")
             def bimFile = file("${genotypesBase}.bim")
             def famFile = file("${genotypesBase}.fam")
-            return [prefix, phenoFile, covFile, header, bedFile, bimFile, famFile]
-        }
-        .groupTuple()
-
-        pheno_covs.view { prefix, pheno, covariates, header, bed, bim, fam ->
-            log.info """
-            \u001B[1m\u001B[34mMerged Result: ${prefix}\u001B[0m
-            \u001B[32m------------------------------------------------------------\u001B[0m
-            \u001B[33mPhenotype:  \u001B[0m ${pheno}
-            \u001B[33mCovariates: \u001B[0m ${covariates}
-            \u001B[32m------------------------------------------------------------\u001B[0m
-            """
+            [prefix, phenoFile, covFile, header, bedFile, bimFile, famFile]
         }
 
-        REGENIE_STEP_1 (
-            pheno_covs
-        )
+    REGENIE_STEP_1 (
+        pheno_covs
+    )
 
+    // Step 2: Generate chromosome-wise BGEN files
+    chromosome_bgen_files = Channel
+        .from(1..22, 'X') // Chromosomes 1-22 and X
+        .map { chrom ->
+            def bgen_file = file("${params.imputed_bgen_chrs_path}/chr${chrom}_imputed_s2m.bgen")
+            def sample_file = file("${params.bgen_sample_file}")
+            [chrom, bgen_file, sample_file]
+        }
+        .filter { chrom, bgen_file, sample_file ->
+            bgen_file.exists() && sample_file.exists()
+        }
+
+    // Step 3: Combine phenotypes with chromosomes and BGEN files
+    pheno_chrom_bgen = pheno_covs
+        .mix(chromosome_bgen_files)
+        .map { pheno_data, chrom_data ->
+            def (prefix, phenoFile, covFile, header, bedFile, bimFile, famFile) = pheno_data
+            def (chrom, bgen_file, sample_file) = chrom_data
+            [prefix, phenoFile, covFile, header, bedFile, bimFile, famFile, chrom, bgen_file, sample_file]
+        }
+
+    // Step 4: Join with REGENIE_STEP_1 output
+    pheno_chrom_pred = pheno_chrom_bgen
+        .join(REGENIE_STEP_1.out.s1) { pheno_bgen, step1_output ->
+            def (phenotype, phenoFile, covFile, header, bedFile, bimFile, famFile, chrom, bgen_file, sample_file) = pheno_bgen
+            def (phenotype_step1, pred_file) = step1_output
+            if (phenotype == phenotype_step1) {
+                return [phenotype, phenoFile, covFile, header, bedFile, bimFile, famFile, chrom, bgen_file, sample_file, pred_file]
+            }
+            return null
+        }
+        .filter { it != null }
+
+    // Step 5: Run REGENIE Step 2
+    REGENIE_STEP_2 (
+        pheno_chrom_pred
+    )
 }
 
 /*
