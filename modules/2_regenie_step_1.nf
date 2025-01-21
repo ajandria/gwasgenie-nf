@@ -16,7 +16,7 @@ process REGENIE_STEP_1 {
 
     regenie \
     --step 1 --force-step1 \
-    --bed ${header[0]} \
+    --bed ${header} \
     --phenoFile ${phenos} \
     --covarFile ${covs} \
     --extract snps_pass.snplist \
