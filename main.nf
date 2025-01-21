@@ -34,7 +34,6 @@ workflow GWASGENIE {
 
     main:
 
-    // Step 1: Extract phenotypes and covariates
     EXTRACT_PHENOS (
         gwas_sheet,
         phenos
@@ -68,38 +67,20 @@ workflow GWASGENIE {
         pheno_covs
     )
 
-    // Step 2: Generate chromosome-wise BGEN files
     chromosome_bgen_files = Channel
-        .from(1..22, 'X') // Chromosomes 1-22 and X
+        .from(1..23) // Chromosomes 1-23
         .map { chrom ->
-            def bgen_file = file("${params.imputed_bgen_chrs_path}/chr${chrom}_imputed_s2m.bgen")
+            def chrom_with_x = chrom == 23 ? 'X' : chrom
+            def bgen_file = file("${params.imputed_bgen_chrs_path}/chr${chrom_with_x}_imputed_s2m.bgen")
             def sample_file = file("${params.bgen_sample_file}")
-            [chrom, bgen_file, sample_file] // Emit as a tuple
+            [chrom_with_x, bgen_file, sample_file]
         }
     chromosome_bgen_files.view()
 
-    // Step 3: Combine phenotypes (pheno_covs) with chromosomes and their files
     pheno_chrom_bgen = pheno_covs
-        .mix(chromosome_bgen_files)
-        .map { pheno_data, chrom_data ->
-            def (prefix, phenoFile, covFile, header, bedFile, bimFile, famFile) = pheno_data
-            def (chrom, bgen_file, sample_file) = chrom_data
-            [prefix, phenoFile, covFile, header, bedFile, bimFile, famFile, chrom, bgen_file, sample_file]
-        }
+        .join(REGENIE_STEP_1)
     pheno_chrom_bgen.view()
-
-    // // Step 4: Join with REGENIE_STEP_1 output
-    // pheno_chrom_pred = pheno_chrom_bgen
-    //     .join(REGENIE_STEP_1.out.s1) { pheno_bgen, step1_output ->
-    //         def (phenotype, phenoFile, covFile, header, bedFile, bimFile, famFile, chrom, bgen_file, sample_file) = pheno_bgen
-    //         def (phenotype_step1, pred_file) = step1_output
-    //         if (phenotype == phenotype_step1) {
-    //             return [phenotype, phenoFile, covFile, header, bedFile, bimFile, famFile, chrom, bgen_file, sample_file, pred_file]
-    //         }
-    //         return null
-    //     }
-    //     .filter { it != null }
-
+    
     // // Step 5: Run REGENIE Step 2
     // REGENIE_STEP_2 (
     //     pheno_chrom_pred
