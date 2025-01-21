@@ -44,6 +44,7 @@ workflow GWASGENIE {
 
     pheno_covs = EXTRACT_PHENOS.out.pheno
         .flatMap { files -> // Unpack the list
+            println(files)
             files.collect { file -> 
                 def prefix = file.name.replace('_pheno.txt', '')
                 [prefix, file]
