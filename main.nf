@@ -36,7 +36,8 @@ workflow GWASGENIE {
 
     EXTRACT_PHENOS (
         gwas_sheet,
-        phenos
+        phenos,
+        params.pcs_path
     )
 
     pheno_covs = EXTRACT_PHENOS.out.pheno

@@ -16,13 +16,27 @@ if (grepl("xlsx", gwas_sheet_path)) {
   gwas_sheet <- gwas_sheet %>% 
     rename(phenotype = `Trait (on original file)`,
            covariates = `Covariates needed`) %>%
-    mutate(covariates = gsub(' ', '', covariates))
+    mutate(covariates = toupper(gsub(' ', '', covariates)),
+           phenotype = toupper(phenotype),
+           `Results folder` = gsub(' ','_',`Results folder`)) %>%
+    filter(`Test association yes/no` == 'Y')
+
+  pcs <- readr::read_delim("${pcs_path}", col_names = FALSE) %>% 
+    rename(FAM = X1,
+          `Study ID` = X2)
+  colnames(pcs)[-c(1,2)] <- c('PC1', 'PC2', 'PC3', 'PC4',
+                              'PC5', 'PC6', 'PC7', 'PC8', 'PC9', 'PC10')
+
+  phenos <- read_excel("${phenos}")  %>% # Clinical data with sample ID and measurements
+    left_join(pcs) %>%
+    mutate(sex = ifelse(Gender == 'Female',1,ifelse(Gender == 'Male', 0, Gender)))
 } else {
   gwas_sheet <- read_tsv(gwas_sheet_path) # Read TSV file
+  phenos <- read_excel("${phenos}") %>% # Clinical data with sample ID and measurements
+    mutate(sex = ifelse(Gender == 'Female',1,ifelse(Gender == 'Male', 0, Gender))) 
 }
 
-phenos <- read_excel("${phenos}") # Clinical data with sample ID and measurements
-
+colnames(phenos) <- toupper(colnames(phenos))
 print(gwas_sheet)
 print(phenos)
 
@@ -31,7 +45,6 @@ apply(gwas_sheet, 1, function(row) {
   # Extract the phenotype and covariates
   pheno <- as.character(row["phenotype"]) # Extract phenotype name
   covariates <- unlist(strsplit(row["covariates"], ",")) # Split covariates into separate columns
-  print(paste('Working with covariates:', covariates))
 
   # Check if the phenotype exists in phenos
   if (!(pheno %in% colnames(phenos))) {

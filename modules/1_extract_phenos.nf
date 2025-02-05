@@ -6,6 +6,7 @@ process EXTRACT_PHENOS {
     input:
     path(gwas_sheet)
     path(phenos)
+    path(pcs_path)
 
     output:
     path("*_pheno.txt"), emit: pheno
