@@ -31,7 +31,7 @@ apply(gwas_sheet, 1, function(row) {
   # Extract the phenotype and covariates
   pheno <- as.character(row["phenotype"]) # Extract phenotype name
   covariates <- unlist(strsplit(row["covariates"], ",")) # Split covariates into separate columns
-  paste('Working with covariates:', covariates)
+  print(paste('Working with covariates:', covariates))
 
   # Check if the phenotype exists in phenos
   if (!(pheno %in% colnames(phenos))) {
