@@ -5,7 +5,23 @@ library(readr)
 library(dplyr)
 
 # Load the data
-gwas_sheet <- read_tsv("${gwas_sheet}") # GWAS sheet with sample, phenotype, and covariates
+
+# Define file path
+gwas_sheet_path <- "${gwas_sheet}"
+
+# Check file extension and read accordingly
+if (str_detect(gwas_sheet_path, "\\.xlsx$")) {
+  excel_gwas_sheet=TRUE
+  gwas_sheet <- read_excel(gwas_sheet_path) # Read Excel file
+  gwas_sheet <- gwas_sheet %>% 
+    rename(phenotype = `Trait (on original file)`,
+           covariates = `Covariates needed`) %>%
+    mutate(covariates = gsub(' ', '', covariates)) %>%
+
+} else {
+  gwas_sheet <- read_tsv(gwas_sheet_path) # Read TSV file
+}
+
 phenos <- read_excel("${phenos}") # Clinical data with sample ID and measurements
 
 print(gwas_sheet)
@@ -36,6 +52,12 @@ apply(gwas_sheet, 1, function(row) {
 
   pheno_data <- pheno_cov_data %>%
     select(FID, IID, all_of(pheno))
+
+  if (excel_gwas_sheet == TRUE) {
+    if (row["Transformation needed"] == "RINT") {
+      pheno_data[[pheno]] <- qnorm((rank(pheno_data[[pheno]], na.last="keep") - 0.5) / sum(!is.na(pheno_data[[pheno]])))
+    }
+  }
 
   # Generate filenames based on phenotype and covariates
   covariates_name <- paste(covariates, collapse = "_")
