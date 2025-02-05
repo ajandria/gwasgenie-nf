@@ -78,6 +78,7 @@ apply(gwas_sheet, 1, function(row) {
   covariate_file <- paste0(gsub(' ','_',pheno), "-", covariates_name, "_covs.txt")
 
   # Write phenotype file
+  colnames(pheno_data) <- gsub(' ','_',colnames(pheno_data))
   write_tsv(pheno_data, pheno_file)
 
   # Filter for covariates
@@ -85,6 +86,7 @@ apply(gwas_sheet, 1, function(row) {
     select(FID, IID, all_of(covariates)) # Use `SAMPLE` as ID and the specified covariates
 
   # Rename columns to retain their original names
+  colnames(covariate_data) <- gsub(' ','_',colnames(covariate_data))
   colnames(covariate_data)[-c(1,2)] <- covariates
 
   # Write covariate file
