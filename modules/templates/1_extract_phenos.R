@@ -10,7 +10,7 @@ library(dplyr)
 gwas_sheet_path <- "${gwas_sheet}"
 
 # Check file extension and read accordingly
-if (str_detect(gwas_sheet_path, "\\.xlsx\$")) {
+if (grepl("xlsx", gwas_sheet_path)) {
   excel_gwas_sheet=TRUE
   gwas_sheet <- read_excel(gwas_sheet_path) # Read Excel file
   gwas_sheet <- gwas_sheet %>% 
