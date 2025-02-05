@@ -74,8 +74,8 @@ apply(gwas_sheet, 1, function(row) {
 
   # Generate filenames based on phenotype and covariates
   covariates_name <- paste(covariates, collapse = "_")
-  pheno_file <- paste0(pheno, "-", covariates_name, "_pheno.txt")
-  covariate_file <- paste0(pheno, "-", covariates_name, "_covs.txt")
+  pheno_file <- paste0(gsub(' ','_',pheno), "-", covariates_name, "_pheno.txt")
+  covariate_file <- paste0(gsub(' ','_',pheno), "-", covariates_name, "_covs.txt")
 
   # Write phenotype file
   write_tsv(pheno_data, pheno_file)
