@@ -16,8 +16,7 @@ if (grepl("xlsx", gwas_sheet_path)) {
   gwas_sheet <- gwas_sheet %>% 
     rename(phenotype = `Trait (on original file)`,
            covariates = `Covariates needed`) %>%
-    mutate(covariates = gsub(' ', '', covariates)) %>%
-
+    mutate(covariates = gsub(' ', '', covariates))
 } else {
   gwas_sheet <- read_tsv(gwas_sheet_path) # Read TSV file
 }
