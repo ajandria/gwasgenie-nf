@@ -27,5 +27,7 @@ process REGENIE_STEP_2 {
         --verbose \
         --threads $task.cpus \
         --out ${phenotype}/${chrom}_${phenotype}_regenie_step_2
+
+        gzip ${phenotype}/*.regenie
     """
 }

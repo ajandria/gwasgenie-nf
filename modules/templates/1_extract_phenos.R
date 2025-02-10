@@ -47,16 +47,24 @@ apply(gwas_sheet, 1, function(row) {
   covariates <- unlist(strsplit(row["covariates"], ",")) # Split covariates into separate columns
 
   # Check if the phenotype exists in phenos
+  #if (!(pheno %in% colnames(phenos))) {
+  #  stop(paste("Error: Phenotype", pheno, "does not exist in the dataset `phenos`"))
+  #}
   if (!(pheno %in% colnames(phenos))) {
-    stop(paste("Error: Phenotype", pheno, "does not exist in the dataset `phenos`"))
+    message(paste("Warning: Phenotype", pheno, "does not exist in the dataset `phenos`. Skipping..."))
+    return(NULL)  # Skip to the next iteration
   }
 
   # Check if all covariates exist in phenos
   missing_covariates <- setdiff(covariates, colnames(phenos))
+  #if (length(missing_covariates) > 0) {
+  #  stop(paste("Error: Covariates", paste(missing_covariates, collapse = ", "), "do not exist in the dataset `phenos`"))
+  #}
   if (length(missing_covariates) > 0) {
-    stop(paste("Error: Covariates", paste(missing_covariates, collapse = ", "), "do not exist in the dataset `phenos`"))
+    message(paste("Warning: Covariates", paste(missing_covariates, collapse = ", "), "do not exist in the dataset `phenos`. Continuing with available data..."))
+    covariates <- setdiff(covariates, missing_covariates)  # Remove missing covariates and continue
   }
-
+  
   # Filter for phenotype
   pheno_cov_data <- phenos %>%
     select(FID, IID, all_of(pheno), all_of(covariates)) %>% # Use `SAMPLE` as ID and the specified phenotype column
