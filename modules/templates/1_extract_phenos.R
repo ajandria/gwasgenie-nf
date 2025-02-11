@@ -61,8 +61,10 @@ apply(gwas_sheet, 1, function(row) {
   #  stop(paste("Error: Covariates", paste(missing_covariates, collapse = ", "), "do not exist in the dataset `phenos`"))
   #}
   if (length(missing_covariates) > 0) {
-    message(paste("Warning: Covariates", paste(missing_covariates, collapse = ", "), "do not exist in the dataset `phenos`. Continuing with available data..."))
-    covariates <- setdiff(covariates, missing_covariates)  # Remove missing covariates and continue
+    message(paste("Warning: Skipping phenotype", pheno, 
+                  "because the following covariates are missing:", 
+                  paste(missing_covariates, collapse = ", ")))
+    return(NULL)  # Skip this iteration
   }
   
   # Filter for phenotype
