@@ -71,6 +71,12 @@ apply(gwas_sheet, 1, function(row) {
     na.omit()
   colnames(pheno_cov_data)[-c(1,2,3)] <- covariates
 
+  # Check if there are no rows left after filtering
+  if (nrow(pheno_cov_data) == 0) {
+    message(paste("Warning: No data available for phenotype", pheno, "after filtering. Skipping..."))
+    return(NULL)  # Skip this iteration
+  }
+
   pheno_data <- pheno_cov_data %>%
     select(FID, IID, all_of(pheno))
 
