@@ -23,7 +23,7 @@ if (grepl("xlsx", gwas_sheet_path)) {
 
   pcs <- readr::read_delim("${pcs_path}", col_names = FALSE) %>% 
     rename(FAM = X1,
-          `Study ID` = X2)
+          STUDY_ID = X2)
   colnames(pcs)[-c(1,2)] <- c('PC1', 'PC2', 'PC3', 'PC4',
                               'PC5', 'PC6', 'PC7', 'PC8', 'PC9', 'PC10')
 
