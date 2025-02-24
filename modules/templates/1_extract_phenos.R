@@ -29,11 +29,11 @@ if (grepl("xlsx", gwas_sheet_path)) {
 
   phenos <- read_excel("${phenos}")  %>% # Clinical data with sample ID and measurements
     left_join(pcs) %>%
-    mutate(sex = ifelse(Gender == 'Female',1,ifelse(Gender == 'Male', 0, Gender)))
+    mutate(sex = ifelse(GENDER == 'Female',1,ifelse(GENDER == 'Male', 0, GENDER)))
 } else {
   gwas_sheet <- read_tsv(gwas_sheet_path) # Read TSV file
   phenos <- read_excel("${phenos}") %>% # Clinical data with sample ID and measurements
-    mutate(sex = ifelse(Gender == 'Female',1,ifelse(Gender == 'Male', 0, Gender))) 
+    mutate(sex = ifelse(GENDER == 'Female',1,ifelse(GENDER == 'Male', 0, GENDER))) 
 }
 
 colnames(phenos) <- toupper(colnames(phenos))
