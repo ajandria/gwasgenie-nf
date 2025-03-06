@@ -28,7 +28,7 @@ if (grepl("xlsx", gwas_sheet_path)) {
                               'PC5', 'PC6', 'PC7', 'PC8', 'PC9', 'PC10')
 
   phenos <- read_excel("${phenos}")  %>% # Clinical data with sample ID and measurements
-    left_join(pcs) %>%
+    left_join(pcs %>% mutate(STUDY_ID = as.character(STUDY_ID))) %>%
     mutate(sex = ifelse(GENDER == 'Female',1,ifelse(GENDER == 'Male', 0, GENDER)))
 } else {
   gwas_sheet <- read_tsv(gwas_sheet_path) # Read TSV file
