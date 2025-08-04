@@ -12,11 +12,14 @@ process REGENIE_STEP_1 {
 
     script:
     """
-    plink --bfile ${header} --mac 100 --write-snplist --out snps_pass
+    plink --pgen ${header} --mac 100 --write-snplist --out snps_pass
+
+    awk 'BEGIN {OFS="\t"} NR==1 {print "#FID","IID","SEX"; next} {print 0, $1, $2}' ${header}.psam > ${header}.sample
+    mv ${header}.sample ${header}.psam
 
     regenie \
     --step 1 --force-step1 \
-    --bed ${header} \
+    --pgen ${header} \
     --phenoFile ${phenos} \
     --covarFile ${covs} \
     --extract snps_pass.snplist \
