@@ -4,4 +4,4 @@ channels:
 - bioconda
 dependencies:
 - bioconda::regenie=3.6
-- bioconda::plink
+- bioconda::plink2
