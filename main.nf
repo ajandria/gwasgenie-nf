@@ -58,9 +58,9 @@ workflow GWASGENIE {
         .map { prefix, phenoFile, covFile ->
             def genotypesBase = params.qced_genotypes
             def header = genotypesBase.tokenize('/').last()
-            def bedFile = file("${genotypesBase}.bed")
-            def bimFile = file("${genotypesBase}.bim")
-            def famFile = file("${genotypesBase}.fam")
+            def bedFile = file("${genotypesBase}.pgen")
+            def bimFile = file("${genotypesBase}.pvar")
+            def famFile = file("${genotypesBase}.psam")
             [prefix, phenoFile, covFile, header, bedFile, bimFile, famFile]
         }
 
