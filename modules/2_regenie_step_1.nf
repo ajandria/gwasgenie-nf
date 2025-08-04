@@ -12,7 +12,7 @@ process REGENIE_STEP_1 {
 
     script:
     """
-    plink --pfile ${header} --mac 100 --write-snplist --out snps_pass
+    plink2 --pfile ${header} --mac 100 --write-snplist --out snps_pass
 
     awk 'BEGIN {OFS="\t"} NR==1 {print "#FID","IID","SEX"; next} {print 0, \$1, \$2}' ${header}.psam > ${header}.sample
     mv ${header}.sample ${header}.psam
