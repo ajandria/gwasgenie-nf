@@ -73,7 +73,8 @@ workflow GWASGENIE {
         .map { chrom ->
             def chrom_with_x = chrom == 23 ? 'X' : chrom
             def bgen_file = file("${params.imputed_bgen_chrs_path}/chr${chrom_with_x}_imputed_s2m.pgen")
-            def sample_file = file("${params.bgen_sample_file}")
+            def pvar_file = file("${params.imputed_bgen_chrs_path}/chr${chrom_with_x}_imputed_s2m.pvar")
+            def psam_file = file("${params.imputed_bgen_chrs_path}/chr${chrom_with_x}_imputed_s2m.psam")
             [chrom_with_x, bgen_file, sample_file]
         }
     chromosome_bgen_files.view()
