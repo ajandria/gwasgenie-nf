@@ -13,11 +13,13 @@ process REGENIE_STEP_2 {
     script:
     """
     mkdir ${phenotype}
+
+    awk 'BEGIN {OFS="\t"} NR==1 {print "#FID","IID","SEX"; next} {print 0, $1, $2}' ${header}.psam > ${header}.sample
+    mv ${header}.sample ${header}.psam
+
     regenie \
         --step 2 \
-        --bgen ${bgen} \
-        --sample ${sample_bgen} \
-        --ref-first \
+        --pgen ${bgen} \
         --af-cc \
         --phenoFile ${phenos} \
         --covarFile ${covs} \
