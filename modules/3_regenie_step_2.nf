@@ -14,8 +14,8 @@ process REGENIE_STEP_2 {
     """
     mkdir ${phenotype}
 
-    awk 'BEGIN {OFS="\t"} NR==1 {print "#FID","IID","SEX"; next} {print 0, \$1, \$2}' ${header}.psam > ${header}.sample
-    mv ${header}.sample ${header}.psam
+    awk 'BEGIN {OFS="\t"} NR==1 {print "#FID","IID","SEX"; next} {print 0, \$1, \$2}' ${psam} > ${psam}.sample
+    mv ${psam}.sample ${psam}
 
     pgen=${bgen}
 
