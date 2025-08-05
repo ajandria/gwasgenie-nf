@@ -77,7 +77,6 @@ workflow GWASGENIE {
             def psam_file = file("${params.imputed_bgen_chrs_path}/chr${chrom_with_x}_imputed_s2m.psam")
             [chrom_with_x, bgen_file, pvar_file, psam_file]
         }
-    chromosome_bgen_files.view()
 
     pheno_chrom_bgen = pheno_covs
         .join(REGENIE_STEP_1.out.s1)
