@@ -26,7 +26,7 @@ process REGENIE_STEP_2 {
         --phenoFile ${phenos} \
         --covarFile ${covs} \
         --pred ${pred_s1} \
-        --bsize 400 --qt --firth --approx --firth-se --pThresh 0.999 --minMAC 5 \
+        --bsize 400 --qt --firth --approx --firth-se --pThresh 0.999 --minMAC 10 \
         --test additive \
         --verbose \
         --threads $task.cpus \
